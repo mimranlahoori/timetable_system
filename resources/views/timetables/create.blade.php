@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Add Entry to Timetable for') . ' ' . $classroom->name }}
+            {{ __('Edit Timetable Entry for') . ' ' . $classroom->name }}
         </h2>
     </x-slot>
 
@@ -9,8 +9,11 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
                 
-                <form action="{{ route('classrooms.timetable.store', $classroom) }}" method="POST">
+                {{-- Form action changes to the 'update' route and includes the timetable entry --}}
+                <form action="{{ route('classrooms.timetable.update', [$classroom, $timetableEntry]) }}" method="POST">
                     @csrf
+                    {{-- Use the PUT method for updates --}}
+                    @method('PUT')
 
                     {{-- Day of Week --}}
                     <div class="mb-4">
@@ -18,7 +21,11 @@
                         <select name="day_of_week" id="day_of_week" required class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             <option value="">-- Select Day --</option>
                             @foreach ($days as $day)
-                                <option value="{{ $day }}" {{ old('day_of_week') == $day ? 'selected' : '' }}>{{ $day }}</option>
+                                {{-- Check for existing value or old input --}}
+                                <option value="{{ $day }}" 
+                                    {{ old('day_of_week', $timetableEntry->day_of_week) == $day ? 'selected' : '' }}>
+                                    {{ $day }}
+                                </option>
                             @endforeach
                         </select>
                         @error('day_of_week')
@@ -32,7 +39,9 @@
                         <select name="time_slot_id" id="time_slot_id" required class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             <option value="">-- Select Time Slot --</option>
                             @foreach ($timeSlots as $slot)
-                                <option value="{{ $slot->id }}" {{ old('time_slot_id') == $slot->id ? 'selected' : '' }}>
+                                {{-- Check for existing value or old input --}}
+                                <option value="{{ $slot->id }}" 
+                                    {{ old('time_slot_id', $timetableEntry->time_slot_id) == $slot->id ? 'selected' : '' }}>
                                     {{ $slot->start_time }} - {{ $slot->end_time }}
                                 </option>
                             @endforeach
@@ -48,7 +57,9 @@
                         <select name="subject_id" id="subject_id" required class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             <option value="">-- Select Subject --</option>
                             @foreach ($subjects as $subject)
-                                <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
+                                {{-- Check for existing value or old input --}}
+                                <option value="{{ $subject->id }}" 
+                                    {{ old('subject_id', $timetableEntry->subject_id) == $subject->id ? 'selected' : '' }}>
                                     {{ $subject->name }} ({{ $subject->code }})
                                 </option>
                             @endforeach
@@ -64,7 +75,9 @@
                         <select name="teacher_id" id="teacher_id" required class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             <option value="">-- Select Teacher --</option>
                             @foreach ($teachers as $teacher)
-                                <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>
+                                {{-- Check for existing value or old input --}}
+                                <option value="{{ $teacher->id }}" 
+                                    {{ old('teacher_id', $timetableEntry->teacher_id) == $teacher->id ? 'selected' : '' }}>
                                     {{ $teacher->name }}
                                 </option>
                             @endforeach
@@ -77,7 +90,9 @@
                     {{-- Room No. (Optional) --}}
                     <div class="mb-6">
                         <label for="room_no" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Room No. (Optional)') }}</label>
-                        <input type="text" name="room_no" id="room_no" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" value="{{ old('room_no') }}">
+                        {{-- Set the value to the existing room_no or old input --}}
+                        <input type="text" name="room_no" id="room_no" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" 
+                               value="{{ old('room_no', $timetableEntry->room_no) }}">
                         @error('room_no')
                             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                         @enderror
@@ -87,8 +102,9 @@
                     <div class="flex items-center justify-end">
                         <a href="{{ route('classrooms.timetable.index', $classroom) }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 mr-4">{{ __('Cancel') }}</a>
 
-                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            {{ __('Save Entry') }}
+                        {{-- Update the button text --}}
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            {{ __('Update Entry') }}
                         </button>
                     </div>
                 </form>

@@ -19,7 +19,7 @@
                 {{-- Subject Code --}}
                 <div>
                     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Teacher of Subject') }}</p>
-                    <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $subject->teachers->pluck('name')->join(', ') ?: 'N/A' }}</p>
+                    <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $subject->teachers->name ?? 'N/A' }}</p>
                 </div>
 
                 <hr class="dark:border-gray-700">

@@ -12,9 +12,7 @@ class SubjectController extends Controller
     // Index: Lists all subjects for a specific classroom
     public function index(Classroom $classroom)
     {
-        $subjects = $classroom->subjects()
-            ->with(['timetables', 'timeSlot', 'teacher']) // Eager load relationships for the view
-            ->get(); // Using the relationship
+        $subjects = Subject::with('teachers')->where('classroom_id', $classroom->id)->get();
 
         return view('subjects.index', compact('classroom', 'subjects'));
     }
@@ -45,11 +43,6 @@ class SubjectController extends Controller
 
         $subject->classroom()->associate($classroom);
         $subject->save();
-
-        // Now attach to pivot
-        $subject->teachers()->attach($validatedData['teacher_id'], [
-            'classroom_id' => $classroom->id,
-        ]);
 
         return redirect()->route('classrooms.subjects.index', $classroom)
             ->with('success', 'Subject created successfully.');

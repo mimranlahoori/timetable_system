@@ -33,7 +33,7 @@ class TimetableController extends Controller
     public function create(Classroom $classroom)
     {
         // Data required for form dropdowns
-        $subjects = $classroom->subjects()->get();
+        $subjects = Subject::with('teachers')->where('classroom_id', $classroom->id)->get();
         // Assuming TimeSlot and Teacher models exist and have 'start_time'/'name'
         $timeSlots = TimeSlot::orderBy('start_time')->get();
         $teachers = Teacher::orderBy('name')->get();
@@ -52,8 +52,6 @@ class TimetableController extends Controller
             'subject_id' => [
                 'required',
                 'exists:subjects,id',
-                // Ensure the selected subject actually belongs to this classroom (optional, depending on business logic)
-                Rule::in($classroom->subjects->pluck('id')), 
             ],
             'teacher_id' => 'required|exists:teachers,id',
             'time_slot_id' => 'required|exists:time_slots,id',
@@ -81,10 +79,10 @@ class TimetableController extends Controller
     /**
      * Show the form for editing the specified timetable entry.
      */
-    public function edit(Timetable $timetable)
+    public function edit(Timetable $timetable, Classroom $classroom)
     {
         // Data required for form dropdowns
-        $subjects = $timetable->classroom->subjects()->get();
+        $subjects = Subject::with('teachers')->where('classroom_id', $timetable->classroom->id)->get();
         $timeSlots = TimeSlot::orderBy('start_time')->get();
         $teachers = Teacher::orderBy('name')->get();
         $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -102,7 +100,6 @@ class TimetableController extends Controller
             'subject_id' => [
                 'required',
                 'exists:subjects,id',
-                Rule::in($timetable->classroom->subjects->pluck('id')),
             ],
             'teacher_id' => 'required|exists:teachers,id',
             'time_slot_id' => 'required|exists:time_slots,id',

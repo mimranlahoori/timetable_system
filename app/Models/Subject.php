@@ -10,17 +10,15 @@ class Subject extends Model
     /** @use HasFactory<\Database\Factories\SubjectFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'code','classroom_id','teacher_id'];
+    protected $fillable = ['name', 'code', 'classroom_id', 'teacher_id'];
 
-public function teachers()
-{
-    return $this->belongsToMany(Teacher::class, 'class_subject_teacher')
-                ->withPivot('classroom_id')
-                ->withTimestamps();
-}
+    public function teachers()
+    {
+        return $this->belongsTo(Teacher::class, 'teacher_id');
+    }
 
 
-        public function classroom()
+    public function classroom()
     {
         return $this->belongsTo(Classroom::class, 'classroom_id');
     }
