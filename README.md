@@ -89,4 +89,8 @@ Follow these steps to set up the project locally:
 ## 🧑‍💻 Author
 
 Developed by [**M imran Lahoori**](https://github.com/mimranlahoori)
+<<<<<<< HEAD
 Feel free to fork, contribute, or report any issues!
+=======
+Feel free to fork, contribute, or report any issues!
+>>>>>>> 906f5cf2d9cbff547f70573f92e2c74d01fc9eb3
